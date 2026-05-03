@@ -174,6 +174,41 @@
       color: rgba(110,110,138,0.5);
     }
 
+    /* ── TAGLINE BOX ── */
+    .tagline-box {
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      border: 1px solid rgba(110, 110, 138, 0.28);
+      border-radius: 8px;
+      padding: 10px 18px;
+      background: rgba(255, 255, 255, 0.022);
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      width: clamp(260px, 45vw, 460px);
+    }
+
+    .tagline-text {
+      font-family: var(--mono);
+      font-size: clamp(9px, 1.05vw, 12px);
+      letter-spacing: 0.03em;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .tagline-cursor {
+      display: inline-block;
+      width: 2px;
+      height: clamp(9px, 1.05vw, 12px);
+      background: var(--accent);
+      margin-left: 2px;
+      opacity: 0;
+      flex-shrink: 0;
+    }
+
+    .tagline-cursor.visible { opacity: 1; }
+    .tagline-cursor.blink   { animation: blinkCursor 0.8s step-end infinite; }
+
     /* ── KEYFRAMES ── */
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -200,6 +235,9 @@
         <span class="logo-studios-text"></span><span class="logo-cursor"></span>
       </div>
     </div>
+    <div class="tagline-box">
+      <span class="tagline-text"></span><span class="tagline-cursor"></span>
+    </div>
   </div>
 
   <div class="footer">
@@ -211,14 +249,30 @@
 
   <script>
     var word     = 'Studios';
-    var delay    = 1400;  /* ms before typing begins — lets the logo rise in first */
-    var interval = 80;    /* ms per character */
+    var delay    = 1400;
+    var interval = 80;
 
     var textEl   = document.querySelector('.logo-studios-text');
     var cursorEl = document.querySelector('.logo-cursor');
 
+    var taglineBox  = document.querySelector('.tagline-box');
+    var taglineText = document.querySelector('.tagline-text');
+    var taglineCur  = document.querySelector('.tagline-cursor');
+
+    var taglines = [
+      'I want to automate my data capture pipeline',
+      'I want to build a website for my business',
+      'I want to set up a mapping platform for my clients',
+      'I want to analyse my survey data',
+      'I want to create a custom dashboard'
+    ];
+
+    var typeSpeed  = 50;
+    var eraseSpeed = 28;
+    var holdTime   = 3000;
+
     setTimeout(function () {
-      cursorEl.classList.add('visible'); /* show cursor before typing starts */
+      cursorEl.classList.add('visible');
 
       var i = 0;
       var timer = setInterval(function () {
@@ -227,10 +281,54 @@
         if (i === word.length) {
           clearInterval(timer);
           cursorEl.classList.remove('visible');
-          cursorEl.classList.add('blink'); /* switch to blinking once done */
+          cursorEl.classList.add('blink');
+          startTaglines();
         }
       }, interval);
     }, delay);
+
+    function startTaglines() {
+      taglineBox.style.opacity = '1';
+      var idx = 0;
+
+      function typeIn(text, done) {
+        taglineCur.classList.remove('blink');
+        taglineCur.classList.add('visible');
+        var i = 0;
+        var t = setInterval(function () {
+          taglineText.textContent = text.slice(0, i + 1);
+          i++;
+          if (i === text.length) { clearInterval(t); done(); }
+        }, typeSpeed);
+      }
+
+      function eraseOut(done) {
+        taglineCur.classList.remove('blink');
+        taglineCur.classList.add('visible');
+        var text = taglineText.textContent;
+        var i = text.length;
+        var t = setInterval(function () {
+          i--;
+          taglineText.textContent = text.slice(0, i);
+          if (i === 0) { clearInterval(t); done(); }
+        }, eraseSpeed);
+      }
+
+      function cycle() {
+        typeIn(taglines[idx], function () {
+          taglineCur.classList.remove('visible');
+          taglineCur.classList.add('blink');
+          setTimeout(function () {
+            eraseOut(function () {
+              idx = (idx + 1) % taglines.length;
+              setTimeout(cycle, 350);
+            });
+          }, holdTime);
+        });
+      }
+
+      setTimeout(cycle, 600);
+    }
   </script>
 
 </body>
