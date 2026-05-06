@@ -26,6 +26,25 @@
       background: var(--bg);
       color: var(--fg);
       font-family: var(--sans);
+      cursor: none;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    #cursor {
+      position: fixed;
+      width: 14px; height: 14px;
+      border: 1px solid rgba(110,110,138,0.55);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: border-color 0.2s, transform 0.15s, opacity 0.18s ease;
+      will-change: left, top;
+    }
+    body:has(.connect:hover) #cursor {
+      border-color: rgba(201,162,39,0.8);
+      transform: translate(-50%, -50%) scale(1.5);
     }
 
     /* ── NOISE OVERLAY ── */
@@ -65,6 +84,7 @@
       animation: fadeIn 1s cubic-bezier(0.22,1,0.36,1) 2s forwards;
     }
     .connect:hover { color: var(--accent); }
+      .connect { cursor: none; }
     .connect::after {
       content: '';
       display: block;
@@ -161,6 +181,7 @@
       letter-spacing: 2.2px;
       text-transform: uppercase;
       color: var(--muted);
+      opacity: 0.7;
     }
 
     .services span {
@@ -195,6 +216,8 @@
 
   <a class="connect" href="mailto:paul@pidatastudios.com.au">Connect</a>
 
+  <div id="cursor"></div>
+
   <div class="stage">
     <div class="logo-wrap">
       <div class="logo-pi">Pi<span class="logo-dot">.</span></div>
@@ -218,6 +241,70 @@
 
     var textEl   = document.querySelector('.logo-studios-text');
     var cursorEl = document.querySelector('.logo-cursor');
+
+    /* ── MOUSE GLOW ── */
+    var glow = document.createElement('div');
+    glow.style.cssText = [
+      'position:fixed', 'inset:0', 'z-index:1', 'pointer-events:none',
+      'background:radial-gradient(circle 240px at 50% 50%, rgba(201,162,39,0.045) 0%, transparent 70%)',
+      'opacity:0', 'transition:opacity 0.6s ease',
+    ].join(';');
+    document.body.appendChild(glow);
+
+    var mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    var glowX  = mouseX, glowY = mouseY;
+    var entered = false;
+
+    /* ── CURSOR POSITION ── */
+    var cursorEl2 = document.getElementById('cursor');
+    document.addEventListener('mousemove', function (e) {
+      cursorEl2.style.left = e.clientX + 'px';
+      cursorEl2.style.top  = e.clientY + 'px';
+    });
+    document.addEventListener('mouseenter', function () {
+      cursorEl2.style.opacity = '1';
+    });
+    document.addEventListener('mouseleave', function () {
+      cursorEl2.style.opacity = '0';
+    });
+
+    document.addEventListener('mousemove', function (e) {
+      mouseX = e.clientX; mouseY = e.clientY;
+      if (!entered) { glow.style.opacity = '1'; entered = true; }
+    });
+    document.addEventListener('mouseleave', function () {
+      glow.style.opacity = '0'; entered = false;
+    });
+
+    (function animateGlow() {
+      glowX += (mouseX - glowX) * 0.06;
+      glowY += (mouseY - glowY) * 0.06;
+      glow.style.background =
+        'radial-gradient(circle 240px at ' + glowX + 'px ' + glowY + 'px, rgba(201,162,39,0.045) 0%, transparent 70%)';
+      requestAnimationFrame(animateGlow);
+    })();
+
+    /* ── LOGO PARALLAX ── */
+    var stage = document.querySelector('.stage');
+    var targetDx = 0, targetDy = 0;
+    var currentDx = 0, currentDy = 0;
+
+    document.addEventListener('mousemove', function (e) {
+      var cx = window.innerWidth  / 2;
+      var cy = window.innerHeight / 2;
+      targetDx = (e.clientX - cx) / cx;
+      targetDy = (e.clientY - cy) / cy;
+    });
+    document.addEventListener('mouseleave', function () {
+      targetDx = 0; targetDy = 0;
+    });
+
+    (function animateParallax() {
+      currentDx += (targetDx - currentDx) * 0.06;
+      currentDy += (targetDy - currentDy) * 0.06;
+      stage.style.transform = 'translate(' + (currentDx * 6) + 'px, ' + (currentDy * 4) + 'px)';
+      requestAnimationFrame(animateParallax);
+    })();
 
     setTimeout(function () {
       cursorEl.classList.add('visible'); /* show cursor before typing starts */
