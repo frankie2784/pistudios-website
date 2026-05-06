@@ -95,7 +95,7 @@
     .logo-pi {
       font-family: var(--serif);
       font-weight: 400;
-      font-size: clamp(52px, 7vw, 86px);
+      font-size: clamp(72px, 7vw, 86px);
       letter-spacing: -0.03em;
       color: var(--fg);
       line-height: 1;
@@ -117,8 +117,8 @@
 
     .logo-studios-text {
       font-family: var(--mono);
-      # font-weight: 300;
-      font-size: clamp(8px, 1vw, 11px);
+      /* font-weight: 300; */
+      font-size: clamp(10px, 1vw, 13px);
       letter-spacing: 5px;
       text-transform: uppercase;
       color: var(--muted);
@@ -127,7 +127,7 @@
     .logo-cursor {
       display: inline-block;
       width: 2px;
-      height: clamp(8px, 1vw, 11px);
+      height: clamp(10px, 1vw, 13px);
       background: var(--accent);
       margin-left: 2px;
       opacity: 0;
@@ -151,12 +151,14 @@
       opacity: 0;
       animation: fadeIn 1s ease 2.2s forwards;
       white-space: nowrap;
+      text-align: center;
     }
 
     .services {
       font-family: var(--mono);
-      font-size: 8px;
-      letter-spacing: 2.5px;
+      font-size: clamp(11px, 1.2vw, 13px);
+      line-height: 1.25;
+      letter-spacing: 2.2px;
       text-transform: uppercase;
       color: var(--muted);
     }
@@ -168,7 +170,7 @@
 
     .location {
       font-family: var(--mono);
-      font-size: 7.5px;
+      font-size: 10px; /* clamp(10px, 1.5vw, 10px); */
       letter-spacing: 3px;
       text-transform: uppercase;
       color: rgba(110,110,138,0.5);
