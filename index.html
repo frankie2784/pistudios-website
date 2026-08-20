@@ -6,211 +6,13 @@
   <title>Pi Studios</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:     #07070f;
-      --fg:     #f0ede8;
-      --muted:  #6e6e8a;
-      --accent: #c9a227;
-      --serif:  'Playfair Display', Georgia, serif;
-      --mono:   'IBM Plex Mono', monospace;
-      --sans:   'DM Sans', sans-serif;
-    }
-
-    html, body {
-      width: 100%; height: 100%;
-      overflow: hidden;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: var(--sans);
-      cursor: none;
-    }
-
-    /* ── CUSTOM CURSOR ── */
-    #cursor {
-      position: fixed;
-      width: 14px; height: 14px;
-      border: 1px solid rgba(110,110,138,0.55);
-      border-radius: 50%;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 9999;
-      transform: translate(-50%, -50%);
-      transition: border-color 0.2s, transform 0.15s, opacity 0.18s ease;
-      will-change: left, top;
-    }
-    body:has(.connect:hover) #cursor {
-      border-color: rgba(201,162,39,0.8);
-      transform: translate(-50%, -50%) scale(1.5);
-    }
-
-    /* ── NOISE OVERLAY ── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      background-size: 180px 180px;
-      opacity: 0.028;
-      pointer-events: none;
-    }
-
-    /* ── RADIAL VIGNETTE ── */
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse 70% 65% at 50% 50%, transparent 0%, rgba(7,7,15,0.72) 100%);
-      pointer-events: none;
-    }
-
-    /* ── CONNECT LINK ── */
-    .connect {
-      position: fixed;
-      top: 32px; right: 44px;
-      z-index: 100;
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      transition: color 0.3s;
-      opacity: 0;
-      animation: fadeIn 1s cubic-bezier(0.22,1,0.36,1) 2s forwards;
-    }
-    .connect:hover { color: var(--accent); }
-      .connect { cursor: none; }
-    .connect::after {
-      content: '';
-      display: block;
-      width: 18px; height: 1px;
-      background: currentColor;
-      transition: width 0.35s cubic-bezier(0.22,1,0.36,1);
-    }
-    .connect:hover::after { width: 30px; }
-
-    /* ── CENTRE STAGE ── */
-    .stage {
-      position: fixed; inset: 0; z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    /* ── LOGO MARK ── */
-    .logo-wrap {
-      opacity: 0;
-      transform: translateY(16px);
-      animation: riseIn 1s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
-      line-height: 1;
-    }
-
-    .logo-pi {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: clamp(72px, 7vw, 86px);
-      letter-spacing: -0.03em;
-      color: var(--fg);
-      line-height: 1;
-    }
-
-    .logo-dot {
-      color: var(--accent);
-      display: inline-block;
-    }
-
-    /* ── STUDIOS TYPEWRITER ── */
-    .logo-studios {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 0;
-      height: 1.2em;
-    }
-
-    .logo-studios-text {
-      font-family: var(--mono);
-      /* font-weight: 300; */
-      font-size: clamp(10px, 1vw, 13px);
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .logo-cursor {
-      display: inline-block;
-      width: 2px;
-      height: clamp(10px, 1vw, 13px);
-      background: var(--accent);
-      margin-left: 2px;
-      opacity: 0;
-      flex-shrink: 0;
-    }
-
-    .logo-cursor.visible  { opacity: 1; }
-    .logo-cursor.blink    { animation: blinkCursor 0.8s step-end infinite; }
-
-    /* ── BOTTOM FOOTER BLOCK ── */
-    .footer {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      opacity: 0;
-      animation: fadeIn 1s ease 2.2s forwards;
-      white-space: nowrap;
-      text-align: center;
-    }
-
-    .services {
-      font-family: var(--mono);
-      font-size: clamp(11px, 1.2vw, 13px);
-      line-height: 1.25;
-      letter-spacing: 2.2px;
-      text-transform: uppercase;
-      color: var(--muted);
-      opacity: 0.7;
-    }
-
-    .services span {
-      color: rgba(201,162,39,0.3);
-      margin: 0 5px;
-    }
-
-    .location {
-      font-family: var(--mono);
-      font-size: 10px; /* clamp(10px, 1.5vw, 10px); */
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: rgba(110,110,138,0.5);
-    }
-
-    /* ── KEYFRAMES ── */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    @keyframes riseIn {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0);    }
-    }
-    @keyframes blinkCursor {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0; }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet"> <!-- family=Playfair+Display:ital,wght@0,400;0,700;1,400& -->
+  <link rel="stylesheet" href="style.css">
+  <script>
+    /* Set before first paint so the logo starts hidden only when JS can draw it.
+       Without JS the .js styles never apply and the mark renders fully filled. */
+    document.documentElement.classList.add('js');
+  </script>
 </head>
 <body>
 
@@ -218,109 +20,54 @@
 
   <div id="cursor"></div>
 
-  <div class="stage">
-    <div class="logo-wrap">
-      <div class="logo-pi">Pi<span class="logo-dot">.</span></div>
-      <div class="logo-studios">
-        <span class="logo-studios-text"></span><span class="logo-cursor"></span>
+  <div class="landing-page">
+    <div class="stage">
+      <div class="logo-wrap">
+        <div class="logo-pi">
+          <svg class="logo-mark" viewBox="0 0 8.3925877 6.6209383" role="img" aria-label="Pi." focusable="false">
+            <g transform="translate(-49.172829,-42.403336)">
+              <!-- Drawn in handwriting order: P, i stem, i tittle, full stop.
+                   data-sketch-bands splits a glyph into separately-timed hatch
+                   passes at the given bbox-width fractions. The P parts at 0.57,
+                   where its fill stops reaching below the half-height line —
+                   serifs stay with the stem, and the bowl becomes its own pass. -->
+              <path class="logo-glyph" data-sketch-bands="0.57" d="m 49.172836,42.911336 q 0.194734,0.0085 0.499534,0.01693 0.313267,0.0085 0.618067,0.0085 0.4064,0 0.770467,-0.0085 0.372533,-0.0085 0.524933,-0.0085 1.075267,0 1.608668,0.465667 0.5334,0.465667 0.5334,1.202267 0,0.3048 -0.110067,0.643467 -0.1016,0.3302 -0.364067,0.618067 -0.262467,0.2794 -0.7112,0.4572 -0.448734,0.1778 -1.143001,0.1778 h -0.829733 v -0.169333 h 0.745067 q 0.567267,0 0.8636,-0.2286 0.3048,-0.2286 0.4064,-0.601134 0.110067,-0.372533 0.110067,-0.804334 0,-0.804333 -0.287867,-1.202267 -0.287867,-0.397933 -0.999067,-0.397933 -0.364067,0 -0.4826,0.143933 -0.110067,0.143934 -0.110067,0.5842 v 4.182535 q 0,0.313267 0.06773,0.474134 0.06773,0.1524 0.254,0.2032 0.186266,0.0508 0.550333,0.05927 v 0.1778 q -0.2286,-0.01693 -0.592667,-0.01693 -0.364066,-0.0085 -0.753533,-0.0085 -0.338667,0 -0.651934,0.0085 -0.3048,0 -0.516467,0.01693 v -0.169334 q 0.287867,-0.01693 0.4318,-0.06773 0.143934,-0.0508 0.186267,-0.2032 0.0508,-0.1524 0.0508,-0.4572 v -4.199469 q 0,-0.313266 -0.0508,-0.4572 -0.04233,-0.1524 -0.194733,-0.2032 -0.143934,-0.05927 -0.423334,-0.06773 z" />
+              <path class="logo-glyph" d="m 55.396898,44.443804 v 3.674535 q 0,0.3556 0.135467,0.4826 0.143933,0.127 0.474134,0.127 v 0.1778 q -0.143934,-0.0085 -0.448734,-0.01693 -0.296333,-0.01693 -0.6096,-0.01693 -0.296334,0 -0.6096,0.01693 -0.313267,0.0085 -0.465667,0.01693 v -0.1778 q 0.3302,0 0.465667,-0.127 0.143933,-0.127 0.143933,-0.4826 v -2.658535 q 0,-0.381 -0.127,-0.5588 -0.127,-0.186267 -0.4826,-0.186267 v -0.1778 q 0.270933,0.0254 0.524933,0.0254 0.287867,0 0.5334,-0.0254 0.254001,-0.03387 0.465667,-0.09313 z" />
+              <path class="logo-glyph" d="m 54.888898,42.403336 q 0.262467,0 0.440267,0.169334 0.1778,0.160866 0.1778,0.4064 0,0.245533 -0.1778,0.414867 -0.1778,0.160866 -0.440267,0.160866 -0.262467,0 -0.440267,-0.160866 -0.1778,-0.169334 -0.1778,-0.414867 0,-0.245534 0.1778,-0.4064 0.1778,-0.169334 0.440267,-0.169334 z" />
+              <path class="logo-glyph logo-mark-dot" d="m 56.964285,47.864338 q 0.254,0 0.423333,0.169334 0.1778,0.160867 0.1778,0.414867 0,0.245533 -0.1778,0.414866 -0.169333,0.160867 -0.423333,0.160867 -0.254001,0 -0.431801,-0.160867 -0.169333,-0.169333 -0.169333,-0.414866 0,-0.254 0.169333,-0.414867 0.1778,-0.169334 0.431801,-0.169334 z" />
+            </g>
+          </svg>
+        </div>
+        <div class="logo-studios">
+          <span class="logo-studios-text"></span><span class="logo-cursor"></span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="tagline">
+        Truth. Beauty. Code.
+      </div>
+      <div class="location">Melbourne<span>·</span>Australia</div>
+    </div>
+  </div>
+
+  <div class="bio">
+    <div class="bio-text">
+      <div class="bio-text-inner">
+        <div class="bio-text-line">
+          I work where analysis meets craft: building tools and products that treat rigour and elegance as the same requirement, not competing ones. My background flows between spatial analytics, complex modelling, applied AI, strategy and decision support across a range of industries, but the throughline isn't any particular dataset or platform; it's a <strong><em>habit</em></strong> of taking something complicated, unearthing the structure and disorder within it, and building atop tools and processes that can untie knots, extract buried value, reduce effort and help solve real-world challenges.
+        </div>
+          <div class="bio-text-line">
+          Pi Studios is where this habit comes home to roost: a pipeline hand-built, a workflow automated, a dataset made simple and legible at a glance. I build in iterations, not manifestos, testing an idea in code faster than most people can finish describing it, then refining until it's right. That's the tinkering instinct put to work: fast, focused and aimed squarely at a finished result.
+        </div>
+        <div class="bio-text-line">
+          Truth, Beauty, Code. That's not a slogan so much as a description of how I see the world. Truth in the sense of getting the underlying logic of the problem and solution right. Beauty in the sense of caring how it looks and feels once it's built. Code as the medium where, for me, those two things stop being separate concerns and become the same discipline.
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="footer">
-    <div class="services">
-      Bringing the possible to life.
-    </div>
-    <div class="location">Melbourne<span>·</span>Australia</div>
-  </div>
-
-  <script>
-    var word     = 'Studios';
-    var delay    = 1400;  /* ms before typing begins — lets the logo rise in first */
-    var interval = 80;    /* ms per character */
-
-    var textEl   = document.querySelector('.logo-studios-text');
-    var cursorEl = document.querySelector('.logo-cursor');
-
-    /* ── MOUSE GLOW ── */
-    var glow = document.createElement('div');
-    glow.style.cssText = [
-      'position:fixed', 'inset:0', 'z-index:1', 'pointer-events:none',
-      'background:radial-gradient(circle 240px at 50% 50%, rgba(201,162,39,0.045) 0%, transparent 70%)',
-      'opacity:0', 'transition:opacity 0.6s ease',
-    ].join(';');
-    document.body.appendChild(glow);
-
-    var mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-    var glowX  = mouseX, glowY = mouseY;
-    var entered = false;
-
-    /* ── CURSOR POSITION ── */
-    var cursorEl2 = document.getElementById('cursor');
-    document.addEventListener('mousemove', function (e) {
-      cursorEl2.style.left = e.clientX + 'px';
-      cursorEl2.style.top  = e.clientY + 'px';
-    });
-    document.addEventListener('mouseenter', function () {
-      cursorEl2.style.opacity = '1';
-    });
-    document.addEventListener('mouseleave', function () {
-      cursorEl2.style.opacity = '0';
-    });
-
-    document.addEventListener('mousemove', function (e) {
-      mouseX = e.clientX; mouseY = e.clientY;
-      if (!entered) { glow.style.opacity = '1'; entered = true; }
-    });
-    document.addEventListener('mouseleave', function () {
-      glow.style.opacity = '0'; entered = false;
-    });
-
-    (function animateGlow() {
-      glowX += (mouseX - glowX) * 0.06;
-      glowY += (mouseY - glowY) * 0.06;
-      glow.style.background =
-        'radial-gradient(circle 240px at ' + glowX + 'px ' + glowY + 'px, rgba(201,162,39,0.045) 0%, transparent 70%)';
-      requestAnimationFrame(animateGlow);
-    })();
-
-    /* ── LOGO PARALLAX ── */
-    var stage = document.querySelector('.stage');
-    var targetDx = 0, targetDy = 0;
-    var currentDx = 0, currentDy = 0;
-
-    document.addEventListener('mousemove', function (e) {
-      var cx = window.innerWidth  / 2;
-      var cy = window.innerHeight / 2;
-      targetDx = (e.clientX - cx) / cx;
-      targetDy = (e.clientY - cy) / cy;
-    });
-    document.addEventListener('mouseleave', function () {
-      targetDx = 0; targetDy = 0;
-    });
-
-    (function animateParallax() {
-      currentDx += (targetDx - currentDx) * 0.06;
-      currentDy += (targetDy - currentDy) * 0.06;
-      stage.style.transform = 'translate(' + (currentDx * 6) + 'px, ' + (currentDy * 4) + 'px)';
-      requestAnimationFrame(animateParallax);
-    })();
-
-    setTimeout(function () {
-      cursorEl.classList.add('visible'); /* show cursor before typing starts */
-
-      var i = 0;
-      var timer = setInterval(function () {
-        textEl.textContent = word.slice(0, i + 1);
-        i++;
-        if (i === word.length) {
-          clearInterval(timer);
-          cursorEl.classList.remove('visible');
-          cursorEl.classList.add('blink'); /* switch to blinking once done */
-        }
-      }, interval);
-    }, delay);
-  </script>
+  <script src="index.js"></script>
 
 </body>
 </html>
